@@ -1,0 +1,12 @@
+# Large binary files - hosted externally or not needed for the website
+*.mp4
+*.ppt
+*.pptx
+*.pdf
+
+# Allow the resume since it's linked on the index page
+!My resume.pdf
+
+# OS generated files
+.DS_Store
+Thumbs.db
