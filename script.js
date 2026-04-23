@@ -38,10 +38,11 @@ if (gl) {
     uniform vec2 center;
     uniform float time;
 
-    // Vibrant deep space sci-fi color palette
+    // Darker, subtler deep space sci-fi color palette
     vec3 palette( in float t ) {
-        vec3 a = vec3(0.5, 0.5, 0.5);
-        vec3 b = vec3(0.5, 0.5, 0.5);
+        // Lower base and amplitude for a much darker background
+        vec3 a = vec3(0.15, 0.18, 0.22); 
+        vec3 b = vec3(0.15, 0.18, 0.22); 
         vec3 c = vec3(1.0, 1.0, 1.0);
         vec3 d = vec3(0.0, 0.15, 0.30);
         return a + b * cos( 6.28318 * (c * t + d) );
@@ -50,7 +51,9 @@ if (gl) {
     // Calculates Mandelbrot iteration count with continuous smooth shading
     float getMandelbrot(vec2 c) {
         vec2 z = vec2(0.0);
-        for(int i = 0; i < 300; i++) {
+        // Reduced max iterations (80 instead of 300) deliberately removes the high-frequency 
+        // chaotic noise (the "too much info" details), leaving only the large, smooth, elegant curves.
+        for(int i = 0; i < 80; i++) {
             z = vec2(z.x * z.x - z.y * z.y + c.x, 2.0 * z.x * z.y + c.y);
             if(dot(z, z) > 4.0) {
                 float slz = log(log(dot(z, z)) / 2.0) / log(2.0);
@@ -64,13 +67,13 @@ if (gl) {
         // Normalized pixel coordinates (from 0 to 1) maintaining aspect ratio
         vec2 uv = (gl_FragCoord.xy - 0.5 * resolution.xy) / min(resolution.x, resolution.y);
         
-        // Push the bounds of WebGL 32-bit float precision (breaks down around 10^-5)
+        // Push the bounds of WebGL 32-bit float precision
         float minZoom = 0.000015;
         float maxZoom = 2.5;
         float zoomRatio = minZoom / maxZoom;
         
-        // Time-driven zoom mechanics
-        float t = time * 0.04; 
+        // Time-driven zoom mechanics (Significantly slowed down)
+        float t = time * 0.015; 
         float p1 = fract(t);
         float p2 = fract(t + 0.5);
         
@@ -86,10 +89,10 @@ if (gl) {
         
         // Color mapping with dynamic time shift
         vec3 col1 = vec3(0.0);
-        if(m1 > 0.0) col1 = palette(m1 / 40.0 - time * 0.2);
+        if(m1 > 0.0) col1 = palette(m1 / 30.0 - time * 0.1);
         
         vec3 col2 = vec3(0.0);
-        if(m2 > 0.0) col2 = palette(m2 / 40.0 - time * 0.2);
+        if(m2 > 0.0) col2 = palette(m2 / 30.0 - time * 0.1);
         
         // Smooth sine wave crossfade between the two zoom depths to create infinite loop
         float w1 = sin(p1 * 3.14159265);
@@ -101,11 +104,12 @@ if (gl) {
         
         vec3 finalCol = (col1 * w1 + col2 * w2) / max(w1 + w2, 0.001);
         
-        // Deep space vignette to focus attention on the center spiral
-        float vignette = 1.0 - length((gl_FragCoord.xy / resolution.xy) - 0.5) * 1.2;
-        finalCol *= smoothstep(0.0, 0.8, vignette + 0.2);
+        // Strong deep space vignette to focus attention and darken the edges for UI contrast
+        float vignette = 1.0 - length((gl_FragCoord.xy / resolution.xy) - 0.5) * 1.5;
+        finalCol *= smoothstep(0.0, 0.7, vignette);
         
-        gl_FragColor = vec4(finalCol, 1.0);
+        // Final explicit darkening multiplier to ensure the background is never too bright
+        gl_FragColor = vec4(finalCol * 0.55, 1.0);
     }
     `;
 
