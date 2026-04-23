@@ -488,8 +488,8 @@ a:hover {
 .publications-container {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    margin-bottom: 5rem;
+    gap: 4rem; /* Increased gap for better separation */
+    margin-bottom: 6rem;
 }
 
 .pub-card {
@@ -501,6 +501,7 @@ a:hover {
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
+    margin-bottom: 1rem; /* Fallback margin */
 }
 
 .pub-card:hover {
