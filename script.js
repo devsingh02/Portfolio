@@ -38,22 +38,29 @@ if (gl) {
     uniform vec2 center;
     uniform float time;
 
-    // Darker, subtler deep space sci-fi color palette
+    const fragmentShaderSource = `
+    precision highp float;
+    uniform vec2 resolution;
+    uniform vec2 center;
+    uniform float time;
+
+    // Extremely dark, minimalist palette to avoid brightness
     vec3 palette( in float t ) {
-        // Lower base and amplitude for a much darker background
-        vec3 a = vec3(0.15, 0.18, 0.22); 
-        vec3 b = vec3(0.15, 0.18, 0.22); 
+        // Barely visible base with tiny amplitude
+        vec3 a = vec3(0.03, 0.05, 0.08); 
+        vec3 b = vec3(0.02, 0.04, 0.06); 
         vec3 c = vec3(1.0, 1.0, 1.0);
-        vec3 d = vec3(0.0, 0.15, 0.30);
+        vec3 d = vec3(0.0, 0.10, 0.20);
         return a + b * cos( 6.28318 * (c * t + d) );
     }
 
     // Calculates Mandelbrot iteration count with continuous smooth shading
     float getMandelbrot(vec2 c) {
         vec2 z = vec2(0.0);
-        // Reduced max iterations (80 instead of 300) deliberately removes the high-frequency 
-        // chaotic noise (the "too much info" details), leaving only the large, smooth, elegant curves.
-        for(int i = 0; i < 80; i++) {
+        // Severely restricted max iterations (40). This forcefully strips away all 
+        // the chaotic 'detail' and leaves only massive, soft, bloated blobs.
+        // This completely eliminates the blurry moiré effect.
+        for(int i = 0; i < 40; i++) {
             z = vec2(z.x * z.x - z.y * z.y + c.x, 2.0 * z.x * z.y + c.y);
             if(dot(z, z) > 4.0) {
                 float slz = log(log(dot(z, z)) / 2.0) / log(2.0);
@@ -67,13 +74,12 @@ if (gl) {
         // Normalized pixel coordinates (from 0 to 1) maintaining aspect ratio
         vec2 uv = (gl_FragCoord.xy - 0.5 * resolution.xy) / min(resolution.x, resolution.y);
         
-        // Push the bounds of WebGL 32-bit float precision
         float minZoom = 0.000015;
         float maxZoom = 2.5;
         float zoomRatio = minZoom / maxZoom;
         
-        // Time-driven zoom mechanics (Significantly slowed down)
-        float t = time * 0.015; 
+        // Time-driven zoom mechanics (Extremely slow crawl)
+        float t = time * 0.004; 
         float p1 = fract(t);
         float p2 = fract(t + 0.5);
         
@@ -87,12 +93,13 @@ if (gl) {
         float m1 = getMandelbrot(c1);
         float m2 = getMandelbrot(c2);
         
-        // Color mapping with dynamic time shift
+        // Color mapping. Using a massive divisor (100.0 instead of 30.0) 
+        // stretches the color gradient out massively, removing any thin striped details.
         vec3 col1 = vec3(0.0);
-        if(m1 > 0.0) col1 = palette(m1 / 30.0 - time * 0.1);
+        if(m1 > 0.0) col1 = palette(m1 / 100.0 - time * 0.05);
         
         vec3 col2 = vec3(0.0);
-        if(m2 > 0.0) col2 = palette(m2 / 30.0 - time * 0.1);
+        if(m2 > 0.0) col2 = palette(m2 / 100.0 - time * 0.05);
         
         // Smooth sine wave crossfade between the two zoom depths to create infinite loop
         float w1 = sin(p1 * 3.14159265);
@@ -104,12 +111,12 @@ if (gl) {
         
         vec3 finalCol = (col1 * w1 + col2 * w2) / max(w1 + w2, 0.001);
         
-        // Strong deep space vignette to focus attention and darken the edges for UI contrast
-        float vignette = 1.0 - length((gl_FragCoord.xy / resolution.xy) - 0.5) * 1.5;
-        finalCol *= smoothstep(0.0, 0.7, vignette);
+        // Massive, heavy vignette to crush the corners into total black
+        float vignette = 1.0 - length((gl_FragCoord.xy / resolution.xy) - 0.5) * 1.8;
+        finalCol *= smoothstep(0.0, 0.9, vignette);
         
-        // Final explicit darkening multiplier to ensure the background is never too bright
-        gl_FragColor = vec4(finalCol * 0.55, 1.0);
+        // Extreme global darkening
+        gl_FragColor = vec4(finalCol * 0.3, 1.0);
     }
     `;
 
