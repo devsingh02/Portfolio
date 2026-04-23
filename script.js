@@ -22,15 +22,14 @@ document.addEventListener('mousemove', (e) => {
     mouseY = e.clientY;
 });
 
-// The highly detailed kaleidoscope fractal generator
 function drawPsychedelicFractal() {
     const cx = width / 2;
     const cy = height / 2;
     const segments = 12; // 12-fold sacred geometry symmetry
-    const t = time * 0.0003;
+    const t = time * 0.00015; // Slowed down base time for smoother zooming
 
-    // Deep celestial void fade
-    ctx.fillStyle = 'rgba(6, 14, 32, 0.12)'; 
+    // Deep celestial void fade (lower opacity for longer trails)
+    ctx.fillStyle = 'rgba(6, 14, 32, 0.15)'; 
     ctx.fillRect(0, 0, width, height);
 
     ctx.save();
@@ -42,72 +41,104 @@ function drawPsychedelicFractal() {
     ctx.translate(dx, dy);
 
     ctx.globalCompositeOperation = 'lighter';
+    
+    // Constant zooming loop using layered scaling
+    const numLayers = 14; // More layers for denser geometry
+    for (let layer = 0; layer < numLayers; layer++) {
+        // Continuous progression from 0 to 1 for each layer
+        const layerProgress = (layer / numLayers + t * 0.8) % 1; 
+        
+        // Exponential scale for endless zoom (from microscopic to massive)
+        const scale = Math.pow(200, layerProgress); 
+        
+        // Smooth fade in and out based on progress (0 -> 1 -> 0)
+        // Squaring the sine makes the fade sharper so the extremes are completely invisible
+        const alpha = Math.pow(Math.sin(layerProgress * Math.PI), 1.5); 
 
-    // Core pulsing energy ring
-    const pulse = Math.sin(t * 5) * 20;
-    ctx.beginPath();
-    ctx.arc(0, 0, 100 + pulse, 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(140, 231, 255, 0.1)`;
-    ctx.lineWidth = 4;
-    ctx.stroke();
+        ctx.save();
+        ctx.scale(scale, scale);
+        // Slowly rotate layers in alternating directions for complex parallax
+        const rotationDir = layer % 2 === 0 ? 1 : -1;
+        ctx.rotate(t * 0.5 * rotationDir + layer * (Math.PI * 2 / numLayers));
 
-    // Kaleidoscope rendering
-    for (let i = 0; i < segments; i++) {
-        ctx.rotate((Math.PI * 2) / segments);
-        
-        ctx.beginPath();
-        for (let j = 0; j < 60; j++) {
-            // Complex parametric equation for intricate structures
-            const rad = j * 15 + Math.sin(t + j * 0.1) * 80;
-            const angle = Math.sin(t * 0.5 + j * 0.03) * 2.5;
+        // Draw intricate symmetrical shapes
+        for (let i = 0; i < segments; i++) {
+            ctx.rotate((Math.PI * 2) / segments);
             
-            const x = rad * Math.cos(angle);
-            const y = rad * Math.sin(angle);
+            // Dynamic colorful hues
+            const baseHue = 190 + Math.sin(t * 2) * 60; 
+            const hue = (baseHue + layerProgress * 360 + i * 10) % 360;
             
-            if (j === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        }
-        
-        // Color palette: deep teals, ultraviolet, cyan
-        // Base hue shifts slowly between cyan (190) and violet (270)
-        const baseHue = 190 + (Math.sin(t * 0.5) + 1) * 40; 
-        const hue = (baseHue + i * 5 + t * 50) % 360;
-        
-        ctx.strokeStyle = `hsla(${hue}, 80%, 65%, 0.15)`;
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        
-        // Data nodes (glowing dots) along the structural lines
-        for(let j = 5; j < 60; j += 8) {
-            const rad = j * 15 + Math.sin(t + j * 0.1) * 80;
-            const angle = Math.sin(t * 0.5 + j * 0.03) * 2.5;
-            const nodeX = rad * Math.cos(angle);
-            const nodeY = rad * Math.sin(angle);
-            
-            // Pulsing nodes
-            const nodeSize = 1.5 + Math.sin(t * 10 + j) * 1.5;
-            if (nodeSize > 0) {
-                ctx.beginPath();
-                ctx.arc(nodeX, nodeY, nodeSize, 0, Math.PI*2);
-                ctx.fillStyle = `hsla(${(hue + 60) % 360}, 100%, 75%, 0.6)`;
-                ctx.fill();
+            // Draw main tendrils/branches
+            ctx.beginPath();
+            for (let j = 0; j < 12; j++) {
+                // Intricate mathematical pattern
+                const rad = 1 + j * 1.5; 
+                // Wave motion along the tendril
+                const angle = Math.sin(t * 3 + j * 0.3) * 0.5;
+                const x = rad * Math.cos(angle);
+                const y = rad * Math.sin(angle);
+                if (j === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
             }
-        }
-
-        // Inner secondary web (Biological/Synaptic connections)
-        ctx.beginPath();
-        for (let k = 0; k < 20; k++) {
-            const rad2 = k * 25 + Math.cos(t * 2 + k * 0.2) * 30;
-            const angle2 = Math.cos(t * 0.8 + k * 0.1) * 1.5;
-            const x2 = rad2 * Math.cos(angle2);
-            const y2 = rad2 * Math.sin(angle2);
             
-            if (k === 0) ctx.moveTo(x2, y2);
-            else ctx.lineTo(x2, y2);
+            // Keep line width consistent physically regardless of scale
+            ctx.strokeStyle = `hsla(${hue}, 80%, 65%, ${alpha * 0.6})`;
+            ctx.lineWidth = 1.2 / scale; 
+            ctx.stroke();
+            
+            // Draw glowing data nodes at the ends
+            const endRad = 1 + 11 * 1.5;
+            const endAngle = Math.sin(t * 3 + 11 * 0.3) * 0.5;
+            const nodeX = endRad * Math.cos(endAngle);
+            const nodeY = endRad * Math.sin(endAngle);
+            
+            ctx.beginPath();
+            // Physical radius of 2.5 pixels
+            ctx.arc(nodeX, nodeY, 2.5 / scale, 0, Math.PI * 2);
+            ctx.fillStyle = `hsla(${(hue + 60) % 360}, 100%, 75%, ${alpha * 0.9})`;
+            ctx.fill();
+
+            // Cross-connections to form a geometric web
+            ctx.beginPath();
+            // Start at a mid point on the current tendril
+            const startRad = 1 + 6 * 1.5;
+            const startAngle = Math.sin(t * 3 + 6 * 0.3) * 0.5;
+            ctx.moveTo(startRad * Math.cos(startAngle), startRad * Math.sin(startAngle));
+            
+            // Connect to an inner point on the next tendril
+            const nextSegmentAngle = (Math.PI * 2) / segments;
+            const targetRad = 1 + 3 * 1.5;
+            const targetAngleOffset = Math.sin(t * 3 + 3 * 0.3) * 0.5;
+            const targetX = targetRad * Math.cos(nextSegmentAngle + targetAngleOffset);
+            const targetY = targetRad * Math.sin(nextSegmentAngle + targetAngleOffset);
+            ctx.lineTo(targetX, targetY);
+
+            ctx.strokeStyle = `hsla(${(hue + 120) % 360}, 70%, 55%, ${alpha * 0.4})`;
+            ctx.lineWidth = 0.8 / scale;
+            ctx.stroke();
+
+            // Add floating geometric diamonds
+            const dRad = 1 + 4 * 1.5;
+            const dAngle = Math.sin(t * 3 + 4 * 0.3) * 0.5;
+            const dX = dRad * Math.cos(dAngle);
+            const dY = dRad * Math.sin(dAngle);
+            
+            ctx.save();
+            ctx.translate(dX, dY);
+            ctx.rotate(t * 5); // Rapid local spin
+            ctx.beginPath();
+            const dSize = 3 / scale; // 6x6 pixels physically
+            ctx.moveTo(0, -dSize);
+            ctx.lineTo(dSize, 0);
+            ctx.lineTo(0, dSize);
+            ctx.lineTo(-dSize, 0);
+            ctx.closePath();
+            ctx.fillStyle = `hsla(${(hue + 180) % 360}, 90%, 65%, ${alpha * 0.7})`;
+            ctx.fill();
+            ctx.restore();
         }
-        ctx.strokeStyle = `hsla(${(baseHue + 120) % 360}, 70%, 50%, 0.08)`; // Deep Teal
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        ctx.restore();
     }
     
     ctx.restore();
