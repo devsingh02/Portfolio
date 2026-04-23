@@ -4,8 +4,12 @@
 *.pptx
 *.pdf
 
-# Allow the resume since it's linked on the index page
+# Allow specific linked files
 !My resume.pdf
+!Degree.pdf
+!Samsung Certificates proofs or trophies.pdf
+!Coursera Certificates for some extra fun.pdf
+!IELTS Score.pdf
 
 # OS generated files
 .DS_Store
