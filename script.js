@@ -99,7 +99,7 @@ if (gl) {
         '    }',
         '',
         '    // Chill vibes: reduce overall brightness so it acts as a subtle background',
-        '    finalColor *= 0.3;',
+        '    finalColor *= 0.18;',
         '',
         '    // Vignette heavily reduced so the fractal pattern fills the ENTIRE screen',
         '    float vig = 1.0 - length(uv0) * 0.3;',

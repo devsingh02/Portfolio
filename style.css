@@ -61,6 +61,14 @@ body {
     pointer-events: none;
 }
 
+#canvas-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(4, 8, 20, 0.45); /* Deep dark overlay for contrast */
+    z-index: 1;
+}
+
 /* ---- NAVBAR ---- */
 nav {
     position: fixed;
