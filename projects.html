@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects | Devansh Singh</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="canvas-container">
+        <canvas id="fractal-canvas"></canvas>
+    </div>
+
+    <nav>
+        <a href="index.html" class="logo">DS.</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="experience.html">Experience</a>
+            <a href="projects.html" class="active">Projects</a>
+            <a href="research.html">Research</a>
+            <a href="skills.html">Skills</a>
+            <a href="beyond.html">Beyond Code</a>
+        </div>
+    </nav>
+
+    <main>
+        <h2>Featured Projects</h2>
+        
+        <div class="glass-card">
+            <h3>Project Overview Presentation</h3>
+            <p>Slide through my poster presentations highlighting key projects.</p>
+            <div class="slideshow-container">
+                <div class="slide active"><img src="assets/projects_slides/slide_1.png" alt="Lock Screen Classifier"></div>
+                <div class="slide"><img src="assets/projects_slides/slide_2.png" alt="Flood Forecasting"></div>
+                <div class="slide"><img src="assets/projects_slides/slide_3.png" alt="Medicinal Plants"></div>
+                <a class="prev">&#10094;</a>
+                <a class="next">&#10095;</a>
+            </div>
+            <div class="slide-counter">Slide 1 of 3</div>
+        </div>
+
+        <div class="grid-2">
+            <div class="glass-card">
+                <h3>AI-Powered Content Compliance Engine</h3>
+                <p>Architected a full-stack automated moderation platform analyzing marketing assets for brand compliance in real-time. Built a modular inference pipeline integrating InternVL and CLIP.</p>
+                <div class="project-links" style="margin-top: 1rem;">
+                    <a href="https://devranx-prism2-0.hf.space/" target="_blank">Live Demo on HF</a>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h3>Pixel Prompt Annotator</h3>
+                <p>Engineered a conversational AI data annotation platform utilizing Qwen3-VL-4B to generate high-precision bounding boxes via natural language prompting.</p>
+                <div class="project-links" style="margin-top: 1rem;">
+                    <a href="https://devranx-pixel-prompt-annotator.hf.space/" target="_blank">Live Demo on HF</a>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h3>Flood Inundation Forecasting System</h3>
+                <p>Built a flood forecasting system using Google Earth Engine for geospatial data acquisition and machine learning on river imagery for real-time hazard mapping.</p>
+            </div>
+
+            <div class="glass-card">
+                <h3>Medicinal Plants Identifier</h3>
+                <p>Developed a high-accuracy medicinal plant classification system using VGG16 transfer learning.</p>
+                <div class="project-links" style="margin-top: 1rem;">
+                    <a href="https://github.com/devsingh02/Medicinal-Plants" target="_blank">GitHub Repo</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
