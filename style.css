@@ -69,7 +69,7 @@ nav {
     justify-content: space-between;
     align-items: center;
     padding: 1.2rem 5%;
-    background: rgba(20, 36, 73, 0.4);
+    background: rgba(8, 19, 41, 0.7);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     z-index: 100;
@@ -254,7 +254,7 @@ main {
 
 /* ---- GLASS CARDS (DATA CLUSTERS) ---- */
 .glass-card {
-    background: rgba(20, 36, 73, 0.4);
+    background: rgba(8, 19, 41, 0.65);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border-radius: 0.5rem; /* Sharper corners for sci-fi look */
@@ -441,7 +441,7 @@ a:hover {
 
 /* ---- PROJECT CARDS ---- */
 .project-card {
-    background: rgba(20, 36, 73, 0.4);
+    background: rgba(8, 19, 41, 0.6);
     backdrop-filter: blur(24px);
     border-radius: 0.5rem;
     padding: 2.5rem;
@@ -494,7 +494,7 @@ a:hover {
 }
 
 .pub-card {
-    background: rgba(20, 36, 73, 0.3);
+    background: rgba(8, 19, 41, 0.55);
     backdrop-filter: blur(16px);
     border: 1px solid rgba(56, 71, 109, 0.2);
     border-radius: 0.75rem;
