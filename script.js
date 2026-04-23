@@ -1,9 +1,12 @@
-// Fractal Canvas Background
+/* ====================================
+   THE NEURAL OBSERVATORY — Quantum Archive
+   Fractal Engine + Interactions
+   ==================================== */
+
+// ---- FRACTAL CANVAS (DMT / Sci-Fi Scientist Vibe) ----
 const canvas = document.getElementById('fractal-canvas');
 const ctx = canvas.getContext('2d');
-
-let width, height;
-let time = 0;
+let width, height, time = 0, mouseX = 0, mouseY = 0;
 
 function resize() {
     width = window.innerWidth;
@@ -11,98 +14,163 @@ function resize() {
     canvas.width = width;
     canvas.height = height;
 }
-
 window.addEventListener('resize', resize);
 resize();
 
-function drawFractal() {
-    ctx.fillStyle = 'rgba(10, 10, 15, 0.1)'; // Trail effect
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
+// The highly detailed kaleidoscope fractal generator
+function drawPsychedelicFractal() {
+    const cx = width / 2;
+    const cy = height / 2;
+    const segments = 12; // 12-fold sacred geometry symmetry
+    const t = time * 0.0003;
+
+    // Deep celestial void fade
+    ctx.fillStyle = 'rgba(6, 14, 32, 0.12)'; 
     ctx.fillRect(0, 0, width, height);
 
-    const centerX = width / 2;
-    const centerY = height / 2;
+    ctx.save();
+    ctx.translate(cx, cy);
     
-    // Slow rotation
-    ctx.translate(centerX, centerY);
-    ctx.rotate(time * 0.0005);
-    ctx.translate(-centerX, -centerY);
+    // Mouse interaction subtly shifts the center perspective
+    const dx = (mouseX - cx) * 0.05;
+    const dy = (mouseY - cy) * 0.05;
+    ctx.translate(dx, dy);
 
-    const numPoints = 6;
-    const radius = Math.min(width, height) * 0.4;
-    
-    // Draw interconnected geometry
+    ctx.globalCompositeOperation = 'lighter';
+
+    // Core pulsing energy ring
+    const pulse = Math.sin(t * 5) * 20;
     ctx.beginPath();
-    for (let i = 0; i <= numPoints; i++) {
-        const angle = (i / numPoints) * Math.PI * 2 + time * 0.001;
-        const x = centerX + Math.cos(angle) * radius * Math.sin(time * 0.0005 + i);
-        const y = centerY + Math.sin(angle) * radius * Math.cos(time * 0.0005 + i);
+    ctx.arc(0, 0, 100 + pulse, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(140, 231, 255, 0.1)`;
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    // Kaleidoscope rendering
+    for (let i = 0; i < segments; i++) {
+        ctx.rotate((Math.PI * 2) / segments);
         
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        ctx.beginPath();
+        for (let j = 0; j < 60; j++) {
+            // Complex parametric equation for intricate structures
+            const rad = j * 15 + Math.sin(t + j * 0.1) * 80;
+            const angle = Math.sin(t * 0.5 + j * 0.03) * 2.5;
+            
+            const x = rad * Math.cos(angle);
+            const y = rad * Math.sin(angle);
+            
+            if (j === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
         
-        // Inner connections
-        for(let j=0; j < numPoints; j++) {
-            if(Math.random() > 0.98) {
-                const angle2 = (j / numPoints) * Math.PI * 2;
-                const x2 = centerX + Math.cos(angle2) * radius * 0.5;
-                const y2 = centerY + Math.sin(angle2) * radius * 0.5;
-                ctx.moveTo(x, y);
-                ctx.lineTo(x2, y2);
+        // Color palette: deep teals, ultraviolet, cyan
+        // Base hue shifts slowly between cyan (190) and violet (270)
+        const baseHue = 190 + (Math.sin(t * 0.5) + 1) * 40; 
+        const hue = (baseHue + i * 5 + t * 50) % 360;
+        
+        ctx.strokeStyle = `hsla(${hue}, 80%, 65%, 0.15)`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        
+        // Data nodes (glowing dots) along the structural lines
+        for(let j = 5; j < 60; j += 8) {
+            const rad = j * 15 + Math.sin(t + j * 0.1) * 80;
+            const angle = Math.sin(t * 0.5 + j * 0.03) * 2.5;
+            const nodeX = rad * Math.cos(angle);
+            const nodeY = rad * Math.sin(angle);
+            
+            // Pulsing nodes
+            const nodeSize = 1.5 + Math.sin(t * 10 + j) * 1.5;
+            if (nodeSize > 0) {
+                ctx.beginPath();
+                ctx.arc(nodeX, nodeY, nodeSize, 0, Math.PI*2);
+                ctx.fillStyle = `hsla(${(hue + 60) % 360}, 100%, 75%, 0.6)`;
+                ctx.fill();
             }
         }
+
+        // Inner secondary web (Biological/Synaptic connections)
+        ctx.beginPath();
+        for (let k = 0; k < 20; k++) {
+            const rad2 = k * 25 + Math.cos(t * 2 + k * 0.2) * 30;
+            const angle2 = Math.cos(t * 0.8 + k * 0.1) * 1.5;
+            const x2 = rad2 * Math.cos(angle2);
+            const y2 = rad2 * Math.sin(angle2);
+            
+            if (k === 0) ctx.moveTo(x2, y2);
+            else ctx.lineTo(x2, y2);
+        }
+        ctx.strokeStyle = `hsla(${(baseHue + 120) % 360}, 70%, 50%, 0.08)`; // Deep Teal
+        ctx.lineWidth = 2;
+        ctx.stroke();
     }
     
-    // Dynamic color gradient
-    const hue = (time * 0.05) % 360;
-    ctx.strokeStyle = `hsla(${hue}, 80%, 50%, 0.15)`;
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    
-    // Reset transform
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    
-    time += 16; // Approx 60fps
-    requestAnimationFrame(drawFractal);
+    ctx.restore();
 }
 
-drawFractal();
+function animate() {
+    drawPsychedelicFractal();
+    time += 16;
+    requestAnimationFrame(animate);
+}
 
-// Slideshow Logic
+animate();
+
+// ---- SLIDESHOW ----
 function initSlideshows() {
-    const slideshows = document.querySelectorAll('.slideshow-container');
-    
-    slideshows.forEach(container => {
-        let slideIndex = 1;
+    document.querySelectorAll('.slideshow-container').forEach(container => {
+        let idx = 1;
         const slides = container.querySelectorAll('.slide');
-        const prevBtn = container.querySelector('.prev');
-        const nextBtn = container.querySelector('.next');
+        const prev = container.querySelector('.slide-prev');
+        const next = container.querySelector('.slide-next');
         const counter = container.parentElement.querySelector('.slide-counter');
-        
-        function showSlides(n) {
-            if (n > slides.length) slideIndex = 1;
-            if (n < 1) slideIndex = slides.length;
-            
-            slides.forEach(slide => slide.classList.remove('active'));
-            slides[slideIndex - 1].classList.add('active');
-            
-            if(counter) {
-                counter.textContent = `Slide ${slideIndex} of ${slides.length}`;
-            }
+
+        function show(n) {
+            if (n > slides.length) idx = 1;
+            if (n < 1) idx = slides.length;
+            slides.forEach(s => s.classList.remove('active'));
+            slides[idx - 1].classList.add('active');
+            if (counter) counter.textContent = `ARTIFACT ${idx} // ${slides.length}`;
         }
-        
-        if(prevBtn && nextBtn) {
-            prevBtn.addEventListener('click', () => {
-                showSlides(slideIndex -= 1);
-            });
-            
-            nextBtn.addEventListener('click', () => {
-                showSlides(slideIndex += 1);
-            });
-        }
-        
-        // Initialize
-        if(slides.length > 0) showSlides(slideIndex);
+
+        if (prev) prev.addEventListener('click', () => show(idx -= 1));
+        if (next) next.addEventListener('click', () => show(idx += 1));
+        if (slides.length) show(idx);
     });
 }
 
-document.addEventListener('DOMContentLoaded', initSlideshows);
+// ---- SCROLL ANIMATIONS ----
+function initScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+}
+
+// ---- HAMBURGER MENU ----
+function initHamburger() {
+    const btn = document.querySelector('.hamburger');
+    const links = document.querySelector('.nav-links');
+    if (btn && links) {
+        btn.addEventListener('click', () => {
+            links.classList.toggle('open');
+        });
+    }
+}
+
+// ---- INIT ----
+document.addEventListener('DOMContentLoaded', () => {
+    initSlideshows();
+    initScrollAnimations();
+    initHamburger();
+});

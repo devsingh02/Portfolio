@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Experience | Devansh Singh</title>
+    <title>Experience — Devansh Singh</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="canvas-container">
-        <canvas id="fractal-canvas"></canvas>
-    </div>
-
+    <div id="canvas-container"><canvas id="fractal-canvas"></canvas></div>
     <nav>
-        <a href="index.html" class="logo">DS.</a>
+        <a href="index.html" class="logo">DS</a>
+        <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
         <div class="nav-links">
             <a href="index.html">Home</a>
             <a href="experience.html" class="active">Experience</a>
@@ -25,61 +22,70 @@
     </nav>
 
     <main>
-        <h2>Work Experience</h2>
-        
+        <h2 class="fade-in">Work <span class="accent">Experience</span></h2>
+
         <div class="timeline">
-            <div class="timeline-item glass-card">
-                <div class="date">Feb 2025 – Nov 2025</div>
-                <h3>Social Robotics and LLMs Studentship</h3>
-                <h4>University of Cambridge (AFAR Lab) | Cambridge, UK</h4>
+            <div class="timeline-item glass-card fade-in">
+                <div class="date">Feb 2025 — Nov 2025</div>
+                <h3>Social Robotics & LLMs Studentship</h3>
+                <h4>University of Cambridge (AFAR Lab)</h4>
+                <div class="location">Cambridge, UK</div>
                 <ul>
-                    <li>Engineered 17 high-fidelity multimodal datasets using ELAN to capture high-dimensional stochastic signals (speech, gaze, gesture), modeling complex temporal dynamics.</li>
-                    <li>Optimized Vision-Language Models (VLMs) to decode sequential social context, achieving an 18% improvement in temporal interaction prediction.</li>
+                    <li>Engineered 17 high-fidelity multimodal datasets using ELAN to capture high-dimensional stochastic signals (speech, gaze, gesture), modeling complex temporal dynamics of human-robot social interactions.</li>
+                    <li>Optimized Vision-Language Models to decode sequential social context, achieving an 18% improvement in temporal interaction prediction.</li>
                 </ul>
             </div>
 
-            <div class="timeline-item glass-card">
-                <div class="date">Feb 2025 – Aug 2025</div>
+            <div class="timeline-item glass-card fade-in">
+                <div class="date">Feb 2025 — Aug 2025</div>
                 <h3>Software Development Intern (SDE)</h3>
-                <h4>Razorpay | Bengaluru, India</h4>
+                <h4>Razorpay</h4>
+                <div class="location">Bengaluru, India</div>
                 <ul>
-                    <li>Developed and extended scalable backend services using Ruby on Rails and Golang, contributing to production-grade APIs.</li>
-                    <li>Optimized database costs by re-architecting traffic to replicas, reducing primary CPU usage by 60% and saving $1,500 monthly.</li>
+                    <li>Developed and extended scalable backend services using Ruby on Rails and Golang, contributing to production-grade APIs and improving core system maintainability.</li>
+                    <li>Optimized database costs by re-architecting traffic to replicas, reducing primary CPU usage by 60% and increasing replica utilization from 3% to 50%, saving $1,500/month.</li>
                 </ul>
             </div>
 
-            <div class="timeline-item glass-card">
-                <div class="date">Sept 2024 – Jan 2025</div>
+            <div class="timeline-item glass-card fade-in">
+                <div class="date">Sept 2024 — Jan 2025</div>
                 <h3>Samsung PRISM Intern</h3>
-                <h4>Samsung R&D Institute | Bengaluru, India</h4>
+                <h4>Samsung R&D Institute</h4>
+                <div class="location">Bengaluru, India</div>
                 <ul>
-                    <li>Fine-tuned Hugging Face models achieving >95% efficiency and SOTA results, utilized in UAT for lock screen scanning.</li>
+                    <li>Fine-tuned Hugging Face models achieving >95% efficiency and SOTA results; solution is currently utilized in User Acceptance Testing (UAT) for lock screen scanning.</li>
                     <li>Engineered an automated end-to-end AI pipeline for data classification, reducing manual review time by 40 hours per week.</li>
                 </ul>
             </div>
 
-            <div class="timeline-item glass-card">
-                <div class="date">Sept 2024 – Jan 2025</div>
-                <h3>Research Intern (Applied AI)</h3>
-                <h4>Thapar Institute of Engineering and Technology | Patiala, India</h4>
+            <div class="timeline-item glass-card fade-in">
+                <div class="date">Sept 2024 — Jan 2025</div>
+                <h3>Research Intern (Applied AI & Sequential Modeling)</h3>
+                <h4>Thapar Institute of Engineering and Technology</h4>
+                <div class="location">Patiala, India</div>
                 <ul>
-                    <li>Analyzed Transformer attention dynamics and non-convex loss surfaces to optimize BERT-based architectures.</li>
-                    <li>Developed stochastic time-series models utilizing TSAI library and hybrid LSTM architectures.</li>
+                    <li>Analyzed Transformer attention dynamics and non-convex loss surfaces to optimize BERT-based architectures with layer-specific fine-tuning strategies.</li>
+                    <li>Developed stochastic time-series models utilizing the TSAI library and hybrid LSTM architectures to decode non-linear patterns within high-dimensional sequential datasets.</li>
                 </ul>
             </div>
 
-            <div class="timeline-item glass-card">
-                <div class="date">Jan 2024 – July 2024</div>
+            <div class="timeline-item glass-card fade-in">
+                <div class="date">Jan 2024 — July 2024</div>
                 <h3>Deep Learning Intern</h3>
-                <h4>University of Petroleum and Energy Studies | Dehradun, India</h4>
+                <h4>University of Petroleum and Energy Studies</h4>
+                <div class="location">Dehradun, India</div>
                 <ul>
-                    <li>Created a CNN architecture for automated Diabetic Retinopathy diagnosis hitting 90% accuracy.</li>
-                    <li>Ran comparative studies on optimizers for bird classification, reaching a 94% accuracy peak.</li>
+                    <li>Created a CNN architecture for automated Diabetic Retinopathy diagnosis that hit 90% accuracy while ensuring interpretability for medical use.</li>
+                    <li>Ran comparative studies on optimizers (Nadam, Adam, RMSProp) for bird classification, reaching a 94% accuracy peak.</li>
                 </ul>
             </div>
         </div>
     </main>
 
+    <footer>
+        <div class="footer-line"></div>
+        <p>&copy; 2026 Devansh Singh</p>
+    </footer>
     <script src="script.js"></script>
 </body>
 </html>

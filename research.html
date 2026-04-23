@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Research | Devansh Singh</title>
+    <title>Research — Devansh Singh</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="canvas-container">
-        <canvas id="fractal-canvas"></canvas>
-    </div>
-
+    <div id="canvas-container"><canvas id="fractal-canvas"></canvas></div>
     <nav>
-        <a href="index.html" class="logo">DS.</a>
+        <a href="index.html" class="logo">DS</a>
+        <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
         <div class="nav-links">
             <a href="index.html">Home</a>
             <a href="experience.html">Experience</a>
@@ -25,48 +22,62 @@
     </nav>
 
     <main>
-        <h2>Publications</h2>
-        
-        <div class="glass-card">
-            <h3>Enhancing Fake News Detection: The Critical Role of Model Fine-Tuning</h3>
-            <p>Negi, R., Walia, A., & Singh, D. <br>
-            <em>International Conference on Information Technology and Artificial Intelligence (ITAI), Springer Nature, 2025.</em></p>
-            <a href="https://doi.org/10.1007/978-981-96-8694-0_11" target="_blank" style="color: var(--accent-secondary)">DOI: 10.1007/978-981-96-8694-0_11</a>
+        <h2 class="fade-in">Publications</h2>
+
+        <div class="pub-card fade-in">
+            <h3>Enhancing Fake News Detection: The Critical Role of Model Fine-Tuning for Optimal Performance</h3>
+            <p>Negi, R., Walia, A., & <strong>Singh, D.</strong></p>
+            <div class="pub-venue">International Conference on Information Technology and Artificial Intelligence (ITAI), Springer Nature, 2025</div>
+            <a href="https://doi.org/10.1007/978-981-96-8694-0_11" target="_blank" style="display: inline-block; margin-top: 0.8rem;">DOI →</a>
         </div>
 
-        <div class="glass-card">
+        <div class="pub-card fade-in">
             <h3>A Comparative Study of Different Optimizers on CNNs for Bird Classification</h3>
-            <p>Singh, N., Srivastava, R., ..., Singh, D., et al. <br>
-            <em>Global AI Summit, IEEE Xplore, 2024.</em></p>
-            <a href="https://doi.org/10.1109/GlobalAISummit62156.2024.10947947" target="_blank" style="color: var(--accent-secondary)">DOI: 10.1109/GlobalAISummit62156.2024.10947947</a>
+            <p>Singh, N., Srivastava, R., ..., <strong>Singh, D.</strong>, et al.</p>
+            <div class="pub-venue">Global AI Summit, IEEE Xplore, 2024</div>
+            <a href="https://doi.org/10.1109/GlobalAISummit62156.2024.10947947" target="_blank" style="display: inline-block; margin-top: 0.8rem;">DOI →</a>
         </div>
 
-        <div class="glass-card">
+        <div class="pub-card fade-in">
             <h3>Enhanced Diagnosis of Diabetic Retinopathy Utilizing CNNs</h3>
-            <p>Singh, N., Srivastava, R., ..., Singh, D., et al. <br>
-            <em>Global AI Summit, IEEE Xplore, 2024.</em></p>
-            <a href="https://doi.org/10.1109/GlobalAISummit62156.2024.10947945" target="_blank" style="color: var(--accent-secondary)">DOI: 10.1109/GlobalAISummit62156.2024.10947945</a>
+            <p>Singh, N., Srivastava, R., ..., <strong>Singh, D.</strong>, et al.</p>
+            <div class="pub-venue">Global AI Summit, IEEE Xplore, 2024</div>
+            <a href="https://doi.org/10.1109/GlobalAISummit62156.2024.10947945" target="_blank" style="display: inline-block; margin-top: 0.8rem;">DOI →</a>
         </div>
 
-        <h2 style="margin-top: 4rem;">Samsung PRISM Research Presentation</h2>
-        <div class="glass-card">
-            <p>Resource-Efficient Multi-Modal Ensemble for Automated Content Compliance Validation</p>
-            <div class="slideshow-container">
-                <div class="slide active"><img src="assets/samsung_prism_slides/slide_1.png" alt="Samsung Slide 1"></div>
-                <div class="slide"><img src="assets/samsung_prism_slides/slide_2.png" alt="Samsung Slide 2"></div>
-                <div class="slide"><img src="assets/samsung_prism_slides/slide_3.png" alt="Samsung Slide 3"></div>
-                <div class="slide"><img src="assets/samsung_prism_slides/slide_4.png" alt="Samsung Slide 4"></div>
-                <div class="slide"><img src="assets/samsung_prism_slides/slide_5.png" alt="Samsung Slide 5"></div>
-                <div class="slide"><img src="assets/samsung_prism_slides/slide_6.png" alt="Samsung Slide 6"></div>
-                <div class="slide"><img src="assets/samsung_prism_slides/slide_7.png" alt="Samsung Slide 7"></div>
-                <div class="slide"><img src="assets/samsung_prism_slides/slide_8.png" alt="Samsung Slide 8"></div>
-                <a class="prev">&#10094;</a>
-                <a class="next">&#10095;</a>
+        <h2 class="fade-in" style="margin-top: 5rem;">Samsung PRISM <span class="accent">Deep Dive</span></h2>
+
+        <div class="glass-card fade-in">
+            <div class="about-label">Research Presentation</div>
+            <p style="margin-bottom: 1rem;">Resource-Efficient Multi-Modal Ensemble for Automated Content Compliance Validation — Samsung R&D Institute, Bengaluru</p>
+            <div class="slideshow-wrapper">
+                <div class="slideshow-container">
+                    <div class="slide active"><img src="assets/samsung_prism_slides/slide_1.png" alt="Slide 1"></div>
+                    <div class="slide"><img src="assets/samsung_prism_slides/slide_2.png" alt="Slide 2"></div>
+                    <div class="slide"><img src="assets/samsung_prism_slides/slide_3.png" alt="Slide 3"></div>
+                    <div class="slide"><img src="assets/samsung_prism_slides/slide_4.png" alt="Slide 4"></div>
+                    <div class="slide"><img src="assets/samsung_prism_slides/slide_5.png" alt="Slide 5"></div>
+                    <div class="slide"><img src="assets/samsung_prism_slides/slide_6.png" alt="Slide 6"></div>
+                    <div class="slide"><img src="assets/samsung_prism_slides/slide_7.png" alt="Slide 7"></div>
+                    <div class="slide"><img src="assets/samsung_prism_slides/slide_8.png" alt="Slide 8"></div>
+                    <button class="slide-nav slide-prev">&#10094;</button>
+                    <button class="slide-nav slide-next">&#10095;</button>
+                </div>
+                <div class="slide-counter">1 / 8</div>
             </div>
-            <div class="slide-counter">Slide 1 of 8</div>
+        </div>
+
+        <div class="glass-card fade-in" style="margin-top: 2rem;">
+            <div class="about-label">Cambridge ELAN Work</div>
+            <p style="margin-bottom: 1rem;">Linguistic and multimodal annotation using ELAN for the AFAR Lab's social robotics research.</p>
+            <img src="Cambridge work ELAN snapshot.png" alt="Cambridge ELAN Work" style="width: 100%; border-radius: 0.75rem;">
         </div>
     </main>
 
+    <footer>
+        <div class="footer-line"></div>
+        <p>&copy; 2026 Devansh Singh</p>
+    </footer>
     <script src="script.js"></script>
 </body>
 </html>
