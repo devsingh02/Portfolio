@@ -3,7 +3,7 @@
    Fractal Engine + Interactions
    ==================================== */
 
-// ---- FRACTAL CANVAS (WebGL Infinite Mandelbrot Zoom) ----
+// ---- FRACTAL CANVAS (WebGL Minimalist Mandelbrot Zoom) ----
 const canvas = document.getElementById('fractal-canvas');
 const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
@@ -25,168 +25,135 @@ document.addEventListener('mousemove', (e) => {
 });
 
 if (gl) {
-    const vertexShaderSource = `
-    attribute vec2 position;
-    void main() {
-        gl_Position = vec4(position, 0.0, 1.0);
-    }
-    `;
+    const vertSrc = [
+        'attribute vec2 a_pos;',
+        'void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }'
+    ].join('\n');
 
-    const fragmentShaderSource = `
-    precision highp float;
-    uniform vec2 resolution;
-    uniform vec2 center;
-    uniform float time;
+    const fragSrc = [
+        'precision highp float;',
+        'uniform vec2 u_res;',
+        'uniform vec2 u_center;',
+        'uniform float u_time;',
+        '',
+        '// Moody dark palette — deep ocean blues and teals',
+        'vec3 pal(float t) {',
+        '    vec3 a = vec3(0.02, 0.03, 0.06);',
+        '    vec3 b = vec3(0.04, 0.06, 0.10);',
+        '    vec3 c = vec3(1.0, 1.0, 1.0);',
+        '    vec3 d = vec3(0.0, 0.10, 0.20);',
+        '    return a + b * cos(6.28318 * (c * t + d));',
+        '}',
+        '',
+        '// Mandelbrot with low iteration count for clean, smooth shapes',
+        'float mandel(vec2 c) {',
+        '    vec2 z = vec2(0.0);',
+        '    for (int i = 0; i < 50; i++) {',
+        '        z = vec2(z.x*z.x - z.y*z.y + c.x, 2.0*z.x*z.y + c.y);',
+        '        if (dot(z,z) > 256.0) {',
+        '            return float(i) - log2(log2(dot(z,z))) + 4.0;',
+        '        }',
+        '    }',
+        '    return -1.0;',
+        '}',
+        '',
+        'void main() {',
+        '    vec2 uv = (gl_FragCoord.xy - 0.5 * u_res) / min(u_res.x, u_res.y);',
+        '',
+        '    // Very slow continuous zoom',
+        '    float speed = 0.006;',
+        '    float minZ = 0.00005;',
+        '    float maxZ = 2.0;',
+        '    float ratio = minZ / maxZ;',
+        '',
+        '    float t = u_time * speed;',
+        '    float p1 = fract(t);',
+        '    float p2 = fract(t + 0.5);',
+        '',
+        '    float z1 = maxZ * pow(ratio, p1);',
+        '    float z2 = maxZ * pow(ratio, p2);',
+        '',
+        '    float m1 = mandel(u_center + uv * z1);',
+        '    float m2 = mandel(u_center + uv * z2);',
+        '',
+        '    // Broad color bands — no thin stripes',
+        '    vec3 c1 = m1 > 0.0 ? pal(m1 * 0.015 + u_time * 0.02) : vec3(0.0);',
+        '    vec3 c2 = m2 > 0.0 ? pal(m2 * 0.015 + u_time * 0.02) : vec3(0.0);',
+        '',
+        '    // Crossfade the two layers for infinite loop',
+        '    float w1 = sin(p1 * 3.14159) * smoothstep(0.0, 0.08, p1) * smoothstep(1.0, 0.92, p1);',
+        '    float w2 = sin(p2 * 3.14159) * smoothstep(0.0, 0.08, p2) * smoothstep(1.0, 0.92, p2);',
+        '    vec3 col = (c1 * w1 + c2 * w2) / max(w1 + w2, 0.001);',
+        '',
+        '    // Heavy vignette for dark edges',
+        '    float vig = 1.0 - length(gl_FragCoord.xy / u_res - 0.5) * 1.6;',
+        '    col *= smoothstep(0.0, 0.8, vig);',
+        '',
+        '    // Global darkening — keeps it a subtle background, not a screensaver',
+        '    gl_FragColor = vec4(col * 0.35, 1.0);',
+        '}'
+    ].join('\n');
 
-    const fragmentShaderSource = `
-    precision highp float;
-    uniform vec2 resolution;
-    uniform vec2 center;
-    uniform float time;
-
-    // Extremely dark, minimalist palette to avoid brightness
-    vec3 palette( in float t ) {
-        // Barely visible base with tiny amplitude
-        vec3 a = vec3(0.03, 0.05, 0.08); 
-        vec3 b = vec3(0.02, 0.04, 0.06); 
-        vec3 c = vec3(1.0, 1.0, 1.0);
-        vec3 d = vec3(0.0, 0.10, 0.20);
-        return a + b * cos( 6.28318 * (c * t + d) );
-    }
-
-    // Calculates Mandelbrot iteration count with continuous smooth shading
-    float getMandelbrot(vec2 c) {
-        vec2 z = vec2(0.0);
-        // Severely restricted max iterations (40). This forcefully strips away all 
-        // the chaotic 'detail' and leaves only massive, soft, bloated blobs.
-        // This completely eliminates the blurry moiré effect.
-        for(int i = 0; i < 40; i++) {
-            z = vec2(z.x * z.x - z.y * z.y + c.x, 2.0 * z.x * z.y + c.y);
-            if(dot(z, z) > 4.0) {
-                float slz = log(log(dot(z, z)) / 2.0) / log(2.0);
-                return float(i) + 1.0 - slz;
-            }
-        }
-        return -1.0;
-    }
-
-    void main() {
-        // Normalized pixel coordinates (from 0 to 1) maintaining aspect ratio
-        vec2 uv = (gl_FragCoord.xy - 0.5 * resolution.xy) / min(resolution.x, resolution.y);
-        
-        float minZoom = 0.000015;
-        float maxZoom = 2.5;
-        float zoomRatio = minZoom / maxZoom;
-        
-        // Time-driven zoom mechanics (Extremely slow crawl)
-        float t = time * 0.004; 
-        float p1 = fract(t);
-        float p2 = fract(t + 0.5);
-        
-        // Two independent zoom layers offset by half a cycle
-        float zoom1 = maxZoom * pow(zoomRatio, p1);
-        float zoom2 = maxZoom * pow(zoomRatio, p2);
-        
-        vec2 c1 = center + uv * zoom1;
-        vec2 c2 = center + uv * zoom2;
-        
-        float m1 = getMandelbrot(c1);
-        float m2 = getMandelbrot(c2);
-        
-        // Color mapping. Using a massive divisor (100.0 instead of 30.0) 
-        // stretches the color gradient out massively, removing any thin striped details.
-        vec3 col1 = vec3(0.0);
-        if(m1 > 0.0) col1 = palette(m1 / 100.0 - time * 0.05);
-        
-        vec3 col2 = vec3(0.0);
-        if(m2 > 0.0) col2 = palette(m2 / 100.0 - time * 0.05);
-        
-        // Smooth sine wave crossfade between the two zoom depths to create infinite loop
-        float w1 = sin(p1 * 3.14159265);
-        float w2 = sin(p2 * 3.14159265);
-        
-        // Darken at the extremes to completely hide any precision rendering artifacts
-        w1 *= smoothstep(0.0, 0.1, p1) * smoothstep(1.0, 0.9, p1);
-        w2 *= smoothstep(0.0, 0.1, p2) * smoothstep(1.0, 0.9, p2);
-        
-        vec3 finalCol = (col1 * w1 + col2 * w2) / max(w1 + w2, 0.001);
-        
-        // Massive, heavy vignette to crush the corners into total black
-        float vignette = 1.0 - length((gl_FragCoord.xy / resolution.xy) - 0.5) * 1.8;
-        finalCol *= smoothstep(0.0, 0.9, vignette);
-        
-        // Extreme global darkening
-        gl_FragColor = vec4(finalCol * 0.3, 1.0);
-    }
-    `;
-
-    function compileShader(source, type) {
-        const shader = gl.createShader(type);
-        gl.shaderSource(shader, source);
-        gl.compileShader(shader);
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            console.error('Shader error:', gl.getShaderInfoLog(shader));
+    function mkShader(src, type) {
+        const s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+            console.error('Shader compile error:', gl.getShaderInfoLog(s));
             return null;
         }
-        return shader;
+        return s;
     }
 
-    const vertexShader = compileShader(vertexShaderSource, gl.VERTEX_SHADER);
-    const fragmentShader = compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER);
+    const vs = mkShader(vertSrc, gl.VERTEX_SHADER);
+    const fs = mkShader(fragSrc, gl.FRAGMENT_SHADER);
 
-    const program = gl.createProgram();
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-    gl.useProgram(program);
+    const prog = gl.createProgram();
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+        console.error('Program link error:', gl.getProgramInfoLog(prog));
+    }
+    gl.useProgram(prog);
 
-    // Full screen quad
-    const vertices = new Float32Array([
-        -1.0, -1.0,  1.0, -1.0, -1.0,  1.0,
-        -1.0,  1.0,  1.0, -1.0,  1.0,  1.0
-    ]);
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    // Full-screen quad
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        -1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1
+    ]), gl.STATIC_DRAW);
 
-    const positionLoc = gl.getAttribLocation(program, "position");
-    gl.enableVertexAttribArray(positionLoc);
-    gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+    const aPos = gl.getAttribLocation(prog, 'a_pos');
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
-    const resLoc = gl.getUniformLocation(program, "resolution");
-    const centerLoc = gl.getUniformLocation(program, "center");
-    const timeLoc = gl.getUniformLocation(program, "time");
+    const uRes = gl.getUniformLocation(prog, 'u_res');
+    const uCenter = gl.getUniformLocation(prog, 'u_center');
+    const uTime = gl.getUniformLocation(prog, 'u_time');
 
-    // Deep zoom target: Seahorse Valley intricate spiral
-    const targetCX = -0.743643887037151;
-    const targetCY = 0.131825904205330;
-    
-    let startTime = Date.now();
+    // Seahorse Valley — beautiful spirals
+    const CX = -0.743643887037151;
+    const CY =  0.131825904205330;
 
-    function animate() {
-        const time = (Date.now() - startTime) * 0.001;
-        
-        // Mouse interaction adds a tiny, chaotic wobble to the spiral center
-        const cx = targetCX + (mouseX - 0.5) * 0.00002 * Math.sin(time * 0.5);
-        const cy = targetCY + (mouseY - 0.5) * 0.00002 * Math.cos(time * 0.5);
-        
-        gl.uniform2f(resLoc, width, height);
-        gl.uniform2f(centerLoc, cx, cy);
-        gl.uniform1f(timeLoc, time);
-        
+    const t0 = Date.now();
+
+    (function loop() {
+        const sec = (Date.now() - t0) * 0.001;
+        const cx = CX + (mouseX - 0.5) * 0.00001 * Math.sin(sec * 0.3);
+        const cy = CY + (mouseY - 0.5) * 0.00001 * Math.cos(sec * 0.3);
+
+        gl.uniform2f(uRes, width, height);
+        gl.uniform2f(uCenter, cx, cy);
+        gl.uniform1f(uTime, sec);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
-        requestAnimationFrame(animate);
-    }
-    animate();
+        requestAnimationFrame(loop);
+    })();
+
 } else {
-    // Fallback if WebGL isn't supported (renders a solid dark theme)
-    const ctx = canvas.getContext('2d');
-    function fallback() {
-        ctx.fillStyle = '#040814';
-        ctx.fillRect(0, 0, width, height);
-        requestAnimationFrame(fallback);
-    }
-    fallback();
+    const ctx2d = canvas.getContext('2d');
+    ctx2d.fillStyle = '#040814';
+    ctx2d.fillRect(0, 0, width, height);
 }
 
 // ---- SLIDESHOW ----
