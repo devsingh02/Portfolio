@@ -3,170 +3,180 @@
    Fractal Engine + Interactions
    ==================================== */
 
-// ---- FRACTAL CANVAS (DMT / Sci-Fi Scientist Vibe) ----
+// ---- FRACTAL CANVAS (WebGL Infinite Mandelbrot Zoom) ----
 const canvas = document.getElementById('fractal-canvas');
-const ctx = canvas.getContext('2d');
-let width, height, time = 0, mouseX = 0, mouseY = 0;
+const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+let width, height, mouseX = 0.5, mouseY = 0.5;
 
 function resize() {
     width = window.innerWidth;
     height = window.innerHeight;
     canvas.width = width;
     canvas.height = height;
+    if (gl) gl.viewport(0, 0, width, height);
 }
 window.addEventListener('resize', resize);
 resize();
 
 document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
+    mouseX = e.clientX / window.innerWidth;
+    mouseY = e.clientY / window.innerHeight;
 });
 
-function drawPsychedelicFractal() {
-    const cx = width / 2;
-    const cy = height / 2;
-    
-    // Constant zooming parameters
-    const S = 2; // Perfect geometric scaling factor
-    const zoomSpeed = 0.0004;
-    const t = time * zoomSpeed;
-    const progress = t % 1; // Continuous progress from 0 to 1
-    
-    // Solid dark background to emphasize clean, precise mathematical lines
-    ctx.fillStyle = 'rgba(4, 8, 20, 1)'; 
-    ctx.fillRect(0, 0, width, height);
-
-    ctx.save();
-    ctx.translate(cx, cy);
-    
-    // Smooth, slow global rotation
-    ctx.rotate(time * 0.0001);
-    
-    // Mouse interaction subtly shifts the center perspective
-    const dx = (mouseX - cx) * 0.05;
-    const dy = (mouseY - cy) * 0.05;
-    ctx.translate(dx, dy);
-
-    ctx.globalCompositeOperation = 'screen';
-    
-    // Number of layers to ensure the screen is completely covered from center pixel to far off-screen
-    const minLayer = -8;
-    const maxLayer = 6;
-    
-    // Base radius of the math annulus geometry
-    const R = 150;
-    
-    for (let layer = minLayer; layer <= maxLayer; layer++) {
-        const continuousLayer = layer + progress;
-        const scale = Math.pow(S, continuousLayer);
-        
-        // Alpha blending to fade in at the microscopic center and fade out at the massive edge
-        const normalizedDepth = (continuousLayer - minLayer) / (maxLayer - minLayer); 
-        const alpha = Math.pow(Math.sin(normalizedDepth * Math.PI), 1.5); // Smooth fade
-        
-        if (alpha <= 0.01) continue; // Optimization
-
-        ctx.save();
-        ctx.scale(scale, scale);
-        
-        // Keep physical line width perfectly crisp and constant (1.5 pixels) regardless of scale
-        ctx.lineWidth = 1.5 / scale;
-        
-        // Rainbow hue progression across the mathematical layers
-        const hue = (continuousLayer * 45 - time * 0.02) % 360;
-
-        // ---- LAYER GEOMETRY (Defined perfectly in the annulus between R/2 and R) ----
-        
-        // 1. Bounding Circle at R (perfectly overlaps the R/2 circle of the next macro layer)
-        ctx.beginPath();
-        ctx.arc(0, 0, R, 0, Math.PI * 2);
-        ctx.strokeStyle = `hsla(${hue}, 80%, 60%, ${alpha * 0.5})`;
-        ctx.stroke();
-
-        // 2. Mathematically Exact 12-Fold Polar Wave (Spirograph)
-        // Oscillates perfectly between R/2 and R
-        ctx.beginPath();
-        for (let i = 0; i <= 360; i += 2) {
-            const theta = i * Math.PI / 180;
-            const rad = R * 0.75 + R * 0.25 * Math.cos(12 * theta + time * 0.001);
-            if (i === 0) ctx.moveTo(rad * Math.cos(theta), rad * Math.sin(theta));
-            else ctx.lineTo(rad * Math.cos(theta), rad * Math.sin(theta));
-        }
-        ctx.closePath();
-        ctx.strokeStyle = `hsla(${(hue + 60) % 360}, 90%, 65%, ${alpha * 0.8})`;
-        ctx.stroke();
-
-        // 3. Counter-Rotating Inner Polar Wave
-        ctx.beginPath();
-        for (let i = 0; i <= 360; i += 2) {
-            const theta = i * Math.PI / 180;
-            const rad = R * 0.75 + R * 0.25 * Math.sin(12 * theta - time * 0.0015);
-            if (i === 0) ctx.moveTo(rad * Math.cos(theta), rad * Math.sin(theta));
-            else ctx.lineTo(rad * Math.cos(theta), rad * Math.sin(theta));
-        }
-        ctx.closePath();
-        ctx.strokeStyle = `hsla(${(hue + 120) % 360}, 90%, 65%, ${alpha * 0.8})`;
-        ctx.stroke();
-
-        // 4. 12 Intersecting Circles (Flower of Life geometry)
-        // Centered exactly at R/2, with radius R/2. They pass precisely through (0,0) and touch R.
-        ctx.beginPath();
-        for (let i = 0; i < 12; i++) {
-            const angle = i * Math.PI / 6;
-            const cx_circle = (R / 2) * Math.cos(angle);
-            const cy_circle = (R / 2) * Math.sin(angle);
-            ctx.moveTo(cx_circle + R/2, cy_circle);
-            ctx.arc(cx_circle, cy_circle, R / 2, 0, Math.PI * 2);
-        }
-        ctx.strokeStyle = `hsla(${(hue + 180) % 360}, 70%, 55%, ${alpha * 0.4})`;
-        ctx.stroke();
-
-        // 5. 12-Pointed Star Polygon (Zig-zag connecting R/2 and R)
-        ctx.beginPath();
-        for (let i = 0; i < 12; i++) {
-            const a1 = i * Math.PI / 6;
-            const a2 = (i + 0.5) * Math.PI / 6;
-            const a3 = (i + 1) * Math.PI / 6;
-            ctx.moveTo((R / 2) * Math.cos(a1), (R / 2) * Math.sin(a1));
-            ctx.lineTo(R * Math.cos(a2), R * Math.sin(a2));
-            ctx.lineTo((R / 2) * Math.cos(a3), (R / 2) * Math.sin(a3));
-        }
-        ctx.strokeStyle = `hsla(${(hue + 240) % 360}, 80%, 65%, ${alpha * 0.6})`;
-        ctx.stroke();
-
-        // 6. Precise Radial Grid Lines connecting the inner and outer boundaries
-        ctx.beginPath();
-        for (let i = 0; i < 12; i++) {
-            const angle = i * Math.PI / 6;
-            ctx.moveTo((R / 2) * Math.cos(angle), (R / 2) * Math.sin(angle));
-            ctx.lineTo(R * Math.cos(angle), R * Math.sin(angle));
-        }
-        ctx.strokeStyle = `hsla(${(hue + 300) % 360}, 60%, 50%, ${alpha * 0.5})`;
-        ctx.stroke();
-
-        // 7. Glowing Data Nodes at intersections (at radius R)
-        ctx.beginPath();
-        for (let i = 0; i < 12; i++) {
-            const angle = (i + 0.5) * Math.PI / 6;
-            ctx.moveTo(R * Math.cos(angle) + 2.5/scale, R * Math.sin(angle));
-            ctx.arc(R * Math.cos(angle), R * Math.sin(angle), 2.5 / scale, 0, Math.PI * 2);
-        }
-        ctx.fillStyle = `hsla(${hue}, 100%, 75%, ${alpha * 0.9})`;
-        ctx.fill();
-
-        ctx.restore();
+if (gl) {
+    const vertexShaderSource = `
+    attribute vec2 position;
+    void main() {
+        gl_Position = vec4(position, 0.0, 1.0);
     }
+    `;
+
+    const fragmentShaderSource = `
+    precision highp float;
+    uniform vec2 resolution;
+    uniform vec2 center;
+    uniform float time;
+
+    // Vibrant deep space sci-fi color palette
+    vec3 palette( in float t ) {
+        vec3 a = vec3(0.5, 0.5, 0.5);
+        vec3 b = vec3(0.5, 0.5, 0.5);
+        vec3 c = vec3(1.0, 1.0, 1.0);
+        vec3 d = vec3(0.0, 0.15, 0.30);
+        return a + b * cos( 6.28318 * (c * t + d) );
+    }
+
+    // Calculates Mandelbrot iteration count with continuous smooth shading
+    float getMandelbrot(vec2 c) {
+        vec2 z = vec2(0.0);
+        for(int i = 0; i < 300; i++) {
+            z = vec2(z.x * z.x - z.y * z.y + c.x, 2.0 * z.x * z.y + c.y);
+            if(dot(z, z) > 4.0) {
+                float slz = log(log(dot(z, z)) / 2.0) / log(2.0);
+                return float(i) + 1.0 - slz;
+            }
+        }
+        return -1.0;
+    }
+
+    void main() {
+        // Normalized pixel coordinates (from 0 to 1) maintaining aspect ratio
+        vec2 uv = (gl_FragCoord.xy - 0.5 * resolution.xy) / min(resolution.x, resolution.y);
+        
+        // Push the bounds of WebGL 32-bit float precision (breaks down around 10^-5)
+        float minZoom = 0.000015;
+        float maxZoom = 2.5;
+        float zoomRatio = minZoom / maxZoom;
+        
+        // Time-driven zoom mechanics
+        float t = time * 0.04; 
+        float p1 = fract(t);
+        float p2 = fract(t + 0.5);
+        
+        // Two independent zoom layers offset by half a cycle
+        float zoom1 = maxZoom * pow(zoomRatio, p1);
+        float zoom2 = maxZoom * pow(zoomRatio, p2);
+        
+        vec2 c1 = center + uv * zoom1;
+        vec2 c2 = center + uv * zoom2;
+        
+        float m1 = getMandelbrot(c1);
+        float m2 = getMandelbrot(c2);
+        
+        // Color mapping with dynamic time shift
+        vec3 col1 = vec3(0.0);
+        if(m1 > 0.0) col1 = palette(m1 / 40.0 - time * 0.2);
+        
+        vec3 col2 = vec3(0.0);
+        if(m2 > 0.0) col2 = palette(m2 / 40.0 - time * 0.2);
+        
+        // Smooth sine wave crossfade between the two zoom depths to create infinite loop
+        float w1 = sin(p1 * 3.14159265);
+        float w2 = sin(p2 * 3.14159265);
+        
+        // Darken at the extremes to completely hide any precision rendering artifacts
+        w1 *= smoothstep(0.0, 0.1, p1) * smoothstep(1.0, 0.9, p1);
+        w2 *= smoothstep(0.0, 0.1, p2) * smoothstep(1.0, 0.9, p2);
+        
+        vec3 finalCol = (col1 * w1 + col2 * w2) / max(w1 + w2, 0.001);
+        
+        // Deep space vignette to focus attention on the center spiral
+        float vignette = 1.0 - length((gl_FragCoord.xy / resolution.xy) - 0.5) * 1.2;
+        finalCol *= smoothstep(0.0, 0.8, vignette + 0.2);
+        
+        gl_FragColor = vec4(finalCol, 1.0);
+    }
+    `;
+
+    function compileShader(source, type) {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            console.error('Shader error:', gl.getShaderInfoLog(shader));
+            return null;
+        }
+        return shader;
+    }
+
+    const vertexShader = compileShader(vertexShaderSource, gl.VERTEX_SHADER);
+    const fragmentShader = compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER);
+
+    const program = gl.createProgram();
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    gl.useProgram(program);
+
+    // Full screen quad
+    const vertices = new Float32Array([
+        -1.0, -1.0,  1.0, -1.0, -1.0,  1.0,
+        -1.0,  1.0,  1.0, -1.0,  1.0,  1.0
+    ]);
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    const positionLoc = gl.getAttribLocation(program, "position");
+    gl.enableVertexAttribArray(positionLoc);
+    gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+
+    const resLoc = gl.getUniformLocation(program, "resolution");
+    const centerLoc = gl.getUniformLocation(program, "center");
+    const timeLoc = gl.getUniformLocation(program, "time");
+
+    // Deep zoom target: Seahorse Valley intricate spiral
+    const targetCX = -0.743643887037151;
+    const targetCY = 0.131825904205330;
     
-    ctx.restore();
-}
+    let startTime = Date.now();
 
-function animate() {
-    drawPsychedelicFractal();
-    time += 16;
-    requestAnimationFrame(animate);
+    function animate() {
+        const time = (Date.now() - startTime) * 0.001;
+        
+        // Mouse interaction adds a tiny, chaotic wobble to the spiral center
+        const cx = targetCX + (mouseX - 0.5) * 0.00002 * Math.sin(time * 0.5);
+        const cy = targetCY + (mouseY - 0.5) * 0.00002 * Math.cos(time * 0.5);
+        
+        gl.uniform2f(resLoc, width, height);
+        gl.uniform2f(centerLoc, cx, cy);
+        gl.uniform1f(timeLoc, time);
+        
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        requestAnimationFrame(animate);
+    }
+    animate();
+} else {
+    // Fallback if WebGL isn't supported (renders a solid dark theme)
+    const ctx = canvas.getContext('2d');
+    function fallback() {
+        ctx.fillStyle = '#040814';
+        ctx.fillRect(0, 0, width, height);
+        requestAnimationFrame(fallback);
+    }
+    fallback();
 }
-
-animate();
 
 // ---- SLIDESHOW ----
 function initSlideshows() {
