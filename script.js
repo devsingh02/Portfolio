@@ -3,7 +3,7 @@
    Fractal Engine + Interactions
    ==================================== */
 
-// ---- FRACTAL CANVAS (WebGL Minimalist Mandelbrot Zoom) ----
+// ---- SACRED GEOMETRY MANDALA (WebGL) ----
 const canvas = document.getElementById('fractal-canvas');
 const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
@@ -33,64 +33,77 @@ if (gl) {
     const fragSrc = [
         'precision highp float;',
         'uniform vec2 u_res;',
-        'uniform vec2 u_center;',
         'uniform float u_time;',
+        'uniform vec2 u_mouse;',
         '',
-        '// Moody dark palette — deep ocean blues and teals',
-        'vec3 pal(float t) {',
-        '    vec3 a = vec3(0.02, 0.03, 0.06);',
-        '    vec3 b = vec3(0.04, 0.06, 0.10);',
-        '    vec3 c = vec3(1.0, 1.0, 1.0);',
-        '    vec3 d = vec3(0.0, 0.10, 0.20);',
-        '    return a + b * cos(6.28318 * (c * t + d));',
-        '}',
-        '',
-        '// Mandelbrot with low iteration count for clean, smooth shapes',
-        'float mandel(vec2 c) {',
-        '    vec2 z = vec2(0.0);',
-        '    for (int i = 0; i < 50; i++) {',
-        '        z = vec2(z.x*z.x - z.y*z.y + c.x, 2.0*z.x*z.y + c.y);',
-        '        if (dot(z,z) > 256.0) {',
-        '            return float(i) - log2(log2(dot(z,z))) + 4.0;',
-        '        }',
-        '    }',
-        '    return -1.0;',
-        '}',
+        '#define PI 3.14159265',
+        '#define TAU 6.28318531',
         '',
         'void main() {',
         '    vec2 uv = (gl_FragCoord.xy - 0.5 * u_res) / min(u_res.x, u_res.y);',
+        '    uv += (u_mouse - 0.5) * 0.02;',
+        '    float r = length(uv);',
+        '    float a = atan(uv.y, uv.x) + u_time * 0.02;',
+        '    float t = u_time;',
         '',
-        '    // Very slow continuous zoom',
-        '    float speed = 0.006;',
-        '    float minZ = 0.00005;',
-        '    float maxZ = 2.0;',
-        '    float ratio = minZ / maxZ;',
+        '    // Deep purple base',
+        '    vec3 col = vec3(0.05, 0.02, 0.10);',
         '',
-        '    float t = u_time * speed;',
-        '    float p1 = fract(t);',
-        '    float p2 = fract(t + 0.5);',
+        '    // === ORNATE LAYERED PATTERN ===',
+        '    float p = 0.0;',
+        '    p += sin(a*8.0 + r*15.0 + t*0.3)*0.35;',
+        '    p += sin(a*16.0 - r*22.0 + t*0.15)*cos(r*10.0)*0.25;',
+        '    p += cos(a*12.0 + r*18.0 + t*0.2)*sin(a*6.0 - r*8.0)*0.2;',
+        '    p += sin(a*24.0 + r*30.0 - t*0.1)*0.12;',
+        '    p += sin(a*32.0 - r*35.0 + t*0.08)*0.08;',
+        '    p = p * 0.5 + 0.5;',
         '',
-        '    float z1 = maxZ * pow(ratio, p1);',
-        '    float z2 = maxZ * pow(ratio, p2);',
+        '    vec3 patCol = mix(vec3(0.08,0.03,0.18), vec3(0.16,0.08,0.30), p);',
+        '    col += patCol * smoothstep(1.5, 0.0, r);',
         '',
-        '    float m1 = mandel(u_center + uv * z1);',
-        '    float m2 = mandel(u_center + uv * z2);',
+        '    // Warm directional gradient (magenta <-> teal)',
+        '    float ga = (a + PI) / TAU;',
+        '    vec3 warmG = mix(vec3(0.12,0.02,0.08), vec3(0.02,0.06,0.12), ga);',
+        '    col += warmG * 0.25 * smoothstep(1.2, 0.1, r);',
         '',
-        '    // Broad color bands — no thin stripes',
-        '    vec3 c1 = m1 > 0.0 ? pal(m1 * 0.015 + u_time * 0.02) : vec3(0.0);',
-        '    vec3 c2 = m2 > 0.0 ? pal(m2 * 0.015 + u_time * 0.02) : vec3(0.0);',
+        '    // === CONCENTRIC MANDALA RINGS ===',
+        '    float rSum = 0.0;',
+        '    for (int i = 1; i <= 8; i++) {',
+        '        float ri = float(i) * 0.1;',
+        '        float rw = 0.004 + 0.002*sin(t*0.5 + float(i));',
+        '        float ring = smoothstep(rw, 0.0, abs(r - ri));',
+        '        ring *= 0.7 + 0.3*sin(a*(4.0 + float(i)*4.0) + t*0.1*float(i));',
+        '        rSum += ring;',
+        '    }',
+        '    col += vec3(0.20, 0.12, 0.35) * rSum;',
         '',
-        '    // Crossfade the two layers for infinite loop',
-        '    float w1 = sin(p1 * 3.14159) * smoothstep(0.0, 0.08, p1) * smoothstep(1.0, 0.92, p1);',
-        '    float w2 = sin(p2 * 3.14159) * smoothstep(0.0, 0.08, p2) * smoothstep(1.0, 0.92, p2);',
-        '    vec3 col = (c1 * w1 + c2 * w2) / max(w1 + w2, 0.001);',
+        '    // === GOLDEN GLOW NODES (16 outer) ===',
+        '    for (int i = 0; i < 16; i++) {',
+        '        float na = float(i)*TAU/16.0 + t*0.05;',
+        '        vec2 np = vec2(cos(na), sin(na)) * 0.38;',
+        '        float d = length(uv - np);',
+        '        col += vec3(1.0,0.82,0.35) * 0.0001 / (d*d + 0.0005);',
+        '    }',
         '',
-        '    // Heavy vignette for dark edges',
-        '    float vig = 1.0 - length(gl_FragCoord.xy / u_res - 0.5) * 1.6;',
-        '    col *= smoothstep(0.0, 0.8, vig);',
+        '    // === INNER PURPLE NODES (12) ===',
+        '    for (int i = 0; i < 12; i++) {',
+        '        float na = float(i)*TAU/12.0 - t*0.04;',
+        '        vec2 np = vec2(cos(na), sin(na)) * 0.22;',
+        '        float d = length(uv - np);',
+        '        col += vec3(0.7,0.5,1.0) * 0.00005 / (d*d + 0.0003);',
+        '    }',
         '',
-        '    // Global darkening — keeps it a subtle background, not a screensaver',
-        '    gl_FragColor = vec4(col * 0.35, 1.0);',
+        '    // === COLORFUL CENTER ===',
+        '    vec3 rainbow = 0.5 + 0.5*cos(TAU*(vec3(0.0,0.33,0.67) + a/TAU + t*0.15));',
+        '    float cMask = smoothstep(0.18, 0.02, r);',
+        '    col = mix(col, rainbow * 0.45, cMask * 0.6);',
+        '    col += vec3(0.6,0.4,0.9) * 0.006 / (r*r + 0.003);',
+        '',
+        '    // === VIGNETTE & BRIGHTNESS ===',
+        '    col *= max(1.0 - r*0.4, 0.15);',
+        '    col *= 1.1;',
+        '',
+        '    gl_FragColor = vec4(col, 1.0);',
         '}'
     ].join('\n');
 
@@ -117,7 +130,6 @@ if (gl) {
     }
     gl.useProgram(prog);
 
-    // Full-screen quad
     const buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
@@ -129,23 +141,16 @@ if (gl) {
     gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
     const uRes = gl.getUniformLocation(prog, 'u_res');
-    const uCenter = gl.getUniformLocation(prog, 'u_center');
     const uTime = gl.getUniformLocation(prog, 'u_time');
-
-    // Seahorse Valley — beautiful spirals
-    const CX = -0.743643887037151;
-    const CY =  0.131825904205330;
+    const uMouse = gl.getUniformLocation(prog, 'u_mouse');
 
     const t0 = Date.now();
 
     (function loop() {
         const sec = (Date.now() - t0) * 0.001;
-        const cx = CX + (mouseX - 0.5) * 0.00001 * Math.sin(sec * 0.3);
-        const cy = CY + (mouseY - 0.5) * 0.00001 * Math.cos(sec * 0.3);
-
         gl.uniform2f(uRes, width, height);
-        gl.uniform2f(uCenter, cx, cy);
         gl.uniform1f(uTime, sec);
+        gl.uniform2f(uMouse, mouseX, mouseY);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         requestAnimationFrame(loop);
     })();
