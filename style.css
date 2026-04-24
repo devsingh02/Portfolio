@@ -386,6 +386,10 @@ a:hover {
     font-weight: 600;
 }
 
+.about-section p {
+    color: #c8e0d8; /* Brighter off-white for readability */
+}
+
 .stat-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
