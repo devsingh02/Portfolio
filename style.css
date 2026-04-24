@@ -65,7 +65,7 @@ body {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(4, 8, 20, 0.45); /* Deep dark overlay for contrast */
+    background: rgba(4, 8, 20, 0.25); /* Thinner overlay to let fractal pop */
     z-index: 1;
 }
 
