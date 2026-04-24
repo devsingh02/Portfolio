@@ -6,31 +6,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-    /* Deep Celestial Foundation */
+    /* Neural Matrix Foundation */
     --surface-lowest: #000000;
-    --surface-low: #081329;
-    --surface: #060e20;
-    --surface-container: #0c1934;
-    --surface-high: #101e3e;
-    --surface-highest: #142449;
-    --surface-bright: #172b54;
+    --surface-low: #05080a;
+    --surface: #060e14;
+    --surface-container: #0c1a1f;
+    --surface-high: #102429;
+    --surface-highest: #142a30;
+    --surface-bright: #1a353d;
 
-    /* Light-Matter Accents */
-    --primary: #8ce7ff;
-    --primary-dim: #40ceed;
-    --primary-container: #53ddfc;
-    --secondary: #d0bcff;
-    --secondary-container: #2f0076;
-    --tertiary: #b8f9de;
+    /* Neural Matrix Accents */
+    --primary: #00ff9d;       /* Emerald Neon */
+    --primary-dim: #00cc7d;
+    --primary-container: #00ff9d33;
+    --secondary: #00e5ff;     /* Ghost Cyan */
+    --secondary-container: #004d55;
+    --tertiary: #00ff9d;
 
     /* Text */
-    --on-surface: #dee5ff;
-    --on-surface-variant: #9baad6;
-    --outline: #65759e;
-    --outline-variant: #38476d;
+    --on-surface: #e0fdf5;
+    --on-surface-variant: #94b8af;
+    --outline: #4d7a6e;
+    --outline-variant: #2d4d45;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-dim));
+    --gradient-primary: linear-gradient(135deg, var(--primary), var(--secondary));
     --gradient-hud: linear-gradient(135deg, var(--primary), var(--secondary));
 }
 
@@ -65,8 +65,34 @@ body {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(4, 8, 20, 0.25); /* Thinner overlay to let fractal pop */
+    background: rgba(4, 8, 20, 0.2); 
+    background-image: 
+        linear-gradient(rgba(0, 255, 157, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 157, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
     z-index: 1;
+}
+
+/* Scanline Effect */
+#canvas-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(
+        to bottom,
+        transparent 50%,
+        rgba(0, 255, 157, 0.02) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 2;
+    pointer-events: none;
+    animation: scanline 10s linear infinite;
+}
+
+@keyframes scanline {
+    from { background-position: 0 0; }
+    to { background-position: 0 100%; }
 }
 
 /* ---- NAVBAR ---- */
