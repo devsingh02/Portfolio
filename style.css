@@ -61,15 +61,22 @@ body {
     pointer-events: none;
 }
 
+#fractal-canvas {
+    width: 100%;
+    height: 100%;
+    filter: blur(2px);
+    opacity: 0.5;
+}
+
 #canvas-container::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(4, 8, 20, 0.2); 
+    background: rgba(3, 5, 10, 0.5); /* Darker overlay for better text contrast */
     background-image: 
-        linear-gradient(rgba(0, 255, 157, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 255, 157, 0.05) 1px, transparent 1px);
-    background-size: 50px 50px;
+        linear-gradient(rgba(0, 255, 157, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 157, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
     z-index: 1;
 }
 

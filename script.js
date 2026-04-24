@@ -95,9 +95,9 @@ function drawBinaryRain() {
                 const cy = col.y + j * CHAR_SIZE;
                 if (cy < -CHAR_SIZE || cy > height + CHAR_SIZE) continue;
                 const headDist = j / text.length;
-                const alpha = j === text.length - 1 ? 1.0 : (1 - headDist) * col.brightness * 0.6;
+                const alpha = j === text.length - 1 ? 0.8 : (1 - headDist) * col.brightness * 0.4;
                 if (j === text.length - 1) {
-                    ctx.fillStyle = `rgba(255, 255, 255, 0.95)`;
+                    ctx.fillStyle = `rgba(255, 255, 255, 0.7)`;
                 } else {
                     ctx.fillStyle = `rgba(0, 255, 157, ${alpha})`;
                 }
@@ -112,10 +112,10 @@ function drawBinaryRain() {
                 const headDist = j / col.chars.length;
                 // Head char is bright white, tail fades to dark green
                 if (j === col.chars.length - 1) {
-                    ctx.fillStyle = `rgba(200, 255, 230, 0.95)`;
+                    ctx.fillStyle = `rgba(200, 255, 230, 0.7)`;
                     ctx.font = `bold ${CHAR_SIZE}px 'Courier New', monospace`;
                 } else {
-                    const alpha = (1 - headDist) * col.brightness * 0.5;
+                    const alpha = (1 - headDist) * col.brightness * 0.3;
                     ctx.fillStyle = `rgba(0, 255, 157, ${alpha})`;
                     ctx.font = `${CHAR_SIZE}px 'Courier New', monospace`;
                 }
@@ -197,7 +197,7 @@ function drawNeuralNetwork(time) {
     connections.forEach((conn, ci) => {
         const a = nodes[conn.from];
         const b = nodes[conn.to];
-        const alpha = conn.weight * 0.15;
+        const alpha = conn.weight * 0.08;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
@@ -224,8 +224,8 @@ function drawNeuralNetwork(time) {
 
         // Glowing pulse dot
         const grd = ctx.createRadialGradient(px, py, 0, px, py, p.size * 6);
-        grd.addColorStop(0, `rgba(${p.color.join(',')}, 0.8)`);
-        grd.addColorStop(0.3, `rgba(${p.color.join(',')}, 0.3)`);
+        grd.addColorStop(0, `rgba(${p.color.join(',')}, 0.5)`);
+        grd.addColorStop(0.3, `rgba(${p.color.join(',')}, 0.15)`);
         grd.addColorStop(1, `rgba(${p.color.join(',')}, 0)`);
         ctx.beginPath();
         ctx.arc(px, py, p.size * 6, 0, Math.PI * 2);
@@ -235,7 +235,7 @@ function drawNeuralNetwork(time) {
         // Core bright dot
         ctx.beginPath();
         ctx.arc(px, py, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.color.join(',')}, 1)`;
+        ctx.fillStyle = `rgba(${p.color.join(',')}, 0.6)`;
         ctx.fill();
     }
 
@@ -256,14 +256,14 @@ function drawNeuralNetwork(time) {
         // Core ring
         ctx.beginPath();
         ctx.arc(node.x, node.y, r, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(0, 255, 157, ${0.6 * node.activity * pulse})`;
+        ctx.strokeStyle = `rgba(0, 255, 157, ${0.3 * node.activity * pulse})`;
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
         // Inner dot
         ctx.beginPath();
         ctx.arc(node.x, node.y, r * 0.4, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 255, 157, ${0.9 * node.activity})`;
+        ctx.fillStyle = `rgba(0, 255, 157, ${0.4 * node.activity})`;
         ctx.fill();
     });
 }
