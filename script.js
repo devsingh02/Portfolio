@@ -8,13 +8,24 @@ const canvas = document.getElementById('fractal-canvas');
 const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
 let width, height, mouseX = 0.5, mouseY = 0.5;
+let lastW = 0, lastH = 0;
 
 function resize() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-    if (gl) gl.viewport(0, 0, width, height);
+    const nw = window.innerWidth;
+    const nh = window.innerHeight;
+    
+    // Mobile fix: Only resize if width changes (orientation) 
+    // or height changes significantly (ignoring address bar toggle)
+    if (nw !== lastW || Math.abs(nh - lastH) > 120) {
+        width = nw;
+        height = nh;
+        lastW = nw;
+        lastH = nh;
+        
+        canvas.width = width;
+        canvas.height = height;
+        if (gl) gl.viewport(0, 0, width, height);
+    }
 }
 window.addEventListener('resize', resize);
 resize();
